@@ -58,17 +58,17 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 # --- 6. API Endpoint to Fetch Data by Age ---
-@app.get("/heroes/by-age")
-def get_heroes_by_age(age: int, db: Session = Depends(get_db)):
+@app.get("/employees/by-age")
+def get_employee_by_age(age: int, db: Session = Depends(get_db)):
     """
     Fetches all heroes with the specified age.
     """
-    heroes = db.query(company).filter(company.age == age).all()
-    return heroes
+    employees = db.query(company).filter(company.age == age).all()
+    return employees
 
 
 # --- 5. API Endpoint to Add Data ---
-@app.post("/heroes/")
+@app.post("/employees/")
 def create_employee(name: str, secret_name: str, age: int, db: Session = Depends(get_db)):
     """
     Creates a new hero in the database.
