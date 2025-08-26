@@ -3,12 +3,12 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 
 # --- 1. Database Setup ---
-# Define the database file and create an engine
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
 
-# The engine manages the database connection
-engine = create_engine(sqlite_url, connect_args={"check_same_thread": False})
+# MySQL connection string (update user, password, host, db as needed)
+mysql_url = "mysql+mysqlconnector://root:Ansh7905$@localhost:3306/fastapi_db"
+
+# The engine manages the database connection (no connect_args needed for MySQL)
+engine = create_engine(mysql_url, echo=True)
 
 # The base class for our models
 Base = declarative_base()
@@ -23,8 +23,8 @@ class Hero(Base):
     __tablename__ = "heroes"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    secret_name = Column(String)
+    name = Column(String(255), index=True)
+    secret_name = Column(String(255))
     age = Column(Integer)
 
 
@@ -42,6 +42,7 @@ def get_db():
         db.close()
 
 
+
 # --- 4. FastAPI Application ---
 # Create the FastAPI app instance
 app = FastAPI()
@@ -50,6 +51,15 @@ app = FastAPI()
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
+
+# --- 6. API Endpoint to Fetch Data by Age ---
+@app.get("/heroes/by-age")
+def get_heroes_by_age(age: int, db: Session = Depends(get_db)):
+    """
+    Fetches all heroes with the specified age.
+    """
+    heroes = db.query(Hero).filter(Hero.age == age).all()
+    return heroes
 
 
 # --- 5. API Endpoint to Add Data ---
