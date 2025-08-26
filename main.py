@@ -19,8 +19,8 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # --- 2. Database Model ---
 # This class represents the 'heroes' table
-class Hero(Base):
-    __tablename__ = "heroes"
+class company(Base):
+    __tablename__ = "employees"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), index=True)
@@ -63,27 +63,27 @@ def get_heroes_by_age(age: int, db: Session = Depends(get_db)):
     """
     Fetches all heroes with the specified age.
     """
-    heroes = db.query(Hero).filter(Hero.age == age).all()
+    heroes = db.query(company).filter(company.age == age).all()
     return heroes
 
 
 # --- 5. API Endpoint to Add Data ---
 @app.post("/heroes/")
-def create_hero(name: str, secret_name: str, age: int, db: Session = Depends(get_db)):
+def create_employee(name: str, secret_name: str, age: int, db: Session = Depends(get_db)):
     """
     Creates a new hero in the database.
     """
     # Create an instance of the Hero model
-    hero = Hero(name=name, secret_name=secret_name, age=age)
+    employee = company(name=name, secret_name=secret_name, age=age)
     
     # Add the new hero to the session
-    db.add(hero)
+    db.add(employee)
     
     # Commit the changes to the database
     db.commit()
     
     # Refresh the hero object to get the new ID from the database
-    db.refresh(hero)
+    db.refresh(employee)
     
     # Return the created hero object as a JSON response
-    return hero
+    return employee
