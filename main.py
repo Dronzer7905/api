@@ -47,10 +47,15 @@ def get_db():
 # Create the FastAPI app instance
 app = FastAPI()
 
-# This event runs once at startup to create the database file and table
-@app.on_event("startup")
-def on_startup():
+# This event runs once at startup to create the database tables
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     create_db_and_tables()
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 # --- 6. API Endpoint to Fetch Data by Age ---
 @app.get("/heroes/by-age")
